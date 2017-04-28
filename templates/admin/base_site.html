@@ -1,0 +1,187 @@
+
+
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}"><span style="color:#fff;">CHOIES</span><span style="color:#edc77a;">.com</span></a></h1>
+
+{% endblock %}
+
+{% block nav-global %}
+<link rel="stylesheet" href="/static/css/bootstrap.css" media="screen">
+<link rel="stylesheet" href="/static/css/jquery.searchableSelect.css" media="screen">
+<link rel="stylesheet" href="/static/autocomplete_light/select2.css" media="screen">
+<link rel="stylesheet" href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" media="screen">
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/admin/js/promotion.js"></script>
+<script src="/static/admin/js/jquery.dragsort-0.5.1.js"></script>
+<!-- <script src="/static/js/highcharts.js"></script> -->
+<script src="/static/js/highstock.js"></script>
+<script src="/static/js/exporting.js"></script>
+<script src="http://cdn.hcharts.cn/highcharts/modules/funnel.js"></script>
+<script src="/static/autocomplete_light/jquery.init.js"></script>
+<script src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script src="/static/autocomplete_light/select2.js"></script>
+<script src="/static/js/jquery.searchableSelect.js"></script>
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>-->
+        <!--<li><a href="#">Link</a></li>-->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">产品 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/admin/products/product/">产品</a></li>
+            <li><a href="/admin/products/category/">分类</a></li>
+            <li><a href="/admin/products/filter/">产品过滤</a></li>
+            <li><a href="/admin/products/brands/">品牌</a></li>
+            <li><a href="/admin/products/set/">品类</a></li>
+            <li><a href="/admin/products/tags/">标签</a></li>
+            <li><a href="/admin/carts/cartitem/">购物车产品</a></li>
+            <li><a href="/admin/products/colorproduct/">同款不同色</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'product_handle' %}">产品--数据操作</a></li>
+            <!-- <li><a href="{% url 'category_product' %}">产品--分类/批量修改分类basic属性操作</a></li> -->
+            <!-- <li><a href="{% url 'show_hidden_on_out' %}">产品批量显示/隐藏/上架/下架</a></li> -->
+            <!--<li><a href="{% url 'search_attributes' %}">产品批量查询attributes</a></li>-->
+            <li><a href="{% url 'phone_product' %}">首页手机站底部推荐产品修改</a></li>
+            <li><a href="{% url 'product_sale' %}">产品--销售导出</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">促销 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/admin/carts/spromotions/">产品促销</a></li>
+            <li><a href="/admin/carts/promotions/">新品折扣</a></li>
+            <li><a href="/admin/carts/cpromotions/">购物车促销</a></li>
+            <li><a href="/admin/carts/coupons/">折扣号</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'cart_handle' %}">促销--数据操作</a></li>
+
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">订单 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <!--<li><a href="/admin/supply/supplier/supplier_list/">负责人管理下的供应商列表</a></li>-->
+            <li><a href="/admin/orders/order/">订单</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url 'order_add' %}">创建订单</a></li>
+            <li><a href="{% url 'order_handle' %}">订单--数据操作</a></li>
+            <!-- <li><a href="{% url 'order_report' %}">订单统计</a></li> -->
+          </ul>
+        </li>
+      </ul>
+     <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">客户 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+
+              <li><a href="/admin/accounts/customers/">用户管理</a></li>
+              <!-- <li><a href="/admin/accounts/address/">地址管理</a></li> -->
+              <li><a href="/admin/accounts/newsletters/">订阅用户</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'customer_points' %}">客户批量操作</a></li>
+              <!-- <li><a href="{% url 'customer_report' %}">用户统计</a></li> -->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">红人 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+
+              <li><a href="/admin/celebrities/celebrits/">红人</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'celebrity_export' %}">红人数据操作</a></li>
+          </ul>
+        </li>
+      </ul>
+<!--       <ul class="nav navbar-nav"> 
+  <li class="dropdown">
+    <a href="{% url 'dashboard' %}" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Dashboard</a>
+  <ul class="dropdown-menu">
+
+        <li><a href="{% url 'customer_points' %}">客户批量操作</a></li>
+        <li><a href="{% url 'customer_report' %}">用户统计</a></li>
+    </ul>
+  </li>
+</ul> -->
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">报表<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="{% url 'order_report' %}">订单</a></li>
+              <li><a href="{% url 'product_report' %}">产品</a></li>
+              <li><a href="{% url 'customer_report' %}">用户</a></li>
+              <!-- <li><a href="{% url 'ajax_test' %}">ajax_test</a></li> -->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="{% url 'pla' %}" class="dropdown-toggle"  aria-haspopup="true" aria-expanded="false">PLA</a>
+          </li>
+        </ul>
+      </ul>
+      <ul class="nav navbar-nav"> 
+        <li class="dropdown">
+          <a href="/admin/banners/banner/" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">Banner</a>
+        <!-- <ul class="dropdown-menu">
+
+              <li><a href="{% url 'customer_points' %}">客户批量操作</a></li>
+              <li><a href="{% url 'customer_report' %}">用户统计</a></li>
+          </ul> -->
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">站点<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/admin/core/sites/">站点配置</a></li>
+            <li><a href="/admin/core/docs/">站点文案</a></li>
+            <li><a href="/admin/core/currencies/">站点货币列表</a></li>
+            <li><a href="/admin/core/country/">国家列表</a></li>
+            <li><a href="/admin/core/mail_types/">邮件分类</a></li>
+            <li><a href="/admin/core/mail_logs/">邮件日志列表</a></li>
+            <li><a href="/admin/core/mails/">邮件模板列表</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav"> 
+        <li class="dropdown">
+          <a href="/admin/registration/registrationprofile/" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">注册</a>
+        <!-- <ul class="dropdown-menu">
+
+              <li><a href="{% url 'customer_points' %}">客户批量操作</a></li>
+              <li><a href="{% url 'customer_report' %}">用户统计</a></li>
+          </ul> -->
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">认证和授权<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="/admin/auth/user/">用户</a></li>
+              <li><a href="/admin/auth/group/">组</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+
+
+{% endblock %}

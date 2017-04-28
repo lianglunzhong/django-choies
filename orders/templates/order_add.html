@@ -1,0 +1,127 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+<style>
+    textarea{
+        height: 200;
+        width: 180;
+    }
+</style>
+
+<fieldset class="pro-sel">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="sel-box">
+                    <div class="sel-li">
+                        <h3>创建订单</h3>
+                        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_add' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="order_add" class="vTextField">
+                            <div class="mb5">
+                                <label  class="control-label">Customer Email: </label>
+                                <input type="text" name="email" class="vTextField">
+                            </div>
+                            <div class="mb5">
+                                <label class="control-label">Shippint Method: </label>
+                                <select name="shipping_method" class="form-control">
+                                    <option value="HKPT">HKPT</option>
+                                    <option value="UNEMS">UNEMS</option>
+                                    <option value="HKPF">HKPF</option>
+                                </select>
+                            </div>
+                            <div class="mb5">
+                                <label class="control-label">Payment Method: </label>
+                                <select name="payment_method" class="form-control">
+                                    <option value="PP" class="form-control">PAYPAL</option>
+                                    <option value="OC">OC</option>
+                                </select>
+                            </div>
+                            <div class="mb5">
+                                <label class="control-label">订单来源: </label>
+                                <select name="order_from" class="form-control">
+                                    <option value=""></option>
+                                    <option value="aliexpress">速卖通</option>
+                                    <option value="amazon">亚马逊</option>
+                                    <option value="activity">活动单</option>
+                                    <option value="after_sale">售后单</option>
+                                    <option value="celebrity">红人单</option>
+                                    <option value="ebay">易贝</option>
+                                    <option value="iwantwig">iWantWig</option>
+                                    <option value="wish">wish</option>
+                                    <option value="whole_sale">批发单</option>
+                                    <option value="other">other</option>
+                                </select>
+                            </div>
+                            <div class="mb5">
+                                <label class="control-label">退货单？</label>
+                                <input type="checkbox" name="is_backorder"  value="1" >
+                            </div>
+                            <div class="mb5">
+                                <p>退货单请填写关联的订单号</p>
+                                <label>关联的订单号:</label>
+                                <input type="text" name="ref_ordernum" class="vTextField">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="sel-box">
+                    <div class="sel-li">
+                        <h3>根据email批量创建订单</h3>
+                        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_add' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="order_allcreate" class="vTextField">
+                            <div class="mb5">
+                                <label  class="control-label">请输入,一行一个email: </label>
+                                <br><br>
+                                <textarea name="allcreate_eamil" class="form-control"  rows="15"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

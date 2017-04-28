@@ -1,0 +1,120 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+<style>
+    textarea{
+        height: 200;
+        width: 180;
+    }
+</style>
+
+<fieldset class="pro-sel">
+<div class="sel-box" style="padding-left:1%;">
+    <h3>红人导出相关</h3>
+    <hr>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'celebrity_export' %}">
+            {% csrf_token %}
+            <b>红人列表导出:</b><br>
+            <input type="hidden" name="type" value="export_celebrits">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <button type="submit" class="btn btn-primary">Export</button>
+        </form>
+    </div>
+    <br>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'celebrity_export' %}">
+            {% csrf_token %}
+            <b>红人订单产品导出:</b><br>
+            <input type="hidden" name="type" value="export_celebrity_order_products">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <button type="submit" class="btn btn-primary">Export</button>
+        </form>
+    </div>
+    <br>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'celebrity_export' %}">
+            {% csrf_token %}
+            <b>导出红人秀链接:</b><br>
+            <input type="hidden" name="type" value="export_celebrity_urls">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <button type="submit" class="btn btn-primary">Export</button>
+        </form>
+    </div>
+    <br>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'celebrity_export' %}">
+            {% csrf_token %}
+            <b>按admin导出红人订单:</b><br>
+            <input type="hidden" name="type" value="export_celebrity_orders">
+            <label class="control-label" for="fileInput">Admin:</label>
+            <select name="admin_id">
+                {% for admin in admins %}
+                <option value="{{ admin.id }}">{{ admin.username }}</option>
+                {% endfor %}
+            </select>
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <button type="submit" class="btn btn-primary">Export</button>
+        </form>
+    </div>
+    <hr>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'celebrity_export' %}">
+            {% csrf_token %}
+            <h3>红人秀更新</h3>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="hidden" name="type" value="update_celebrity_show">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+    <br><br>
+</div>
+</fieldset>
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

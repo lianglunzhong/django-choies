@@ -1,0 +1,84 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+            <h3>批量sku查询attributes</h3>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'search_attributes' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="search_attributes">
+            <label class="notice"><div class="red" >注意：一行一个SKU</div><div>请输入产品SKU: </div></label>
+
+            <textarea name="skus" class="form-control"  rows="8"></textarea>
+
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+    </div>
+    <div  class="sel-li">
+        <br>
+        <br>
+        <table class="table table-striped">
+            <tr>
+                <td>SKU</td>
+                <td>attribute</td>
+            </tr>
+            {% for product in products %}
+            {% for attribute in attributes %}
+                {% for i in product %}
+                {% for j in attribute %}
+                    {% if i.id == j.product_id %}
+                        <tr>
+                            <td>{{ i.sku }}</td>
+                            <td>{{ j.name }} : {{ j.options }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                {% endfor %}
+            {% endfor %}
+            {% endfor %}
+        </table>
+
+    </div>
+</div>
+</fieldset>
+
+
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

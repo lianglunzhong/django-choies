@@ -1,0 +1,243 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+<style>
+    textarea{
+        height: 200;
+        width: 180;
+    }
+</style>
+
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+    
+    <div class="sel-li">
+    <h3>批量打积分</h3>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <div class="mb5">
+                <input type="hidden" name="type" value="points">
+                <label class="notice">
+                    <div class="red">注意：一行一个Email！！！</div>
+                    <div>请输入email: </div>
+                </label>
+            </div>
+            <textarea name="customer_points" class="form-control mb5"  rows="5"></textarea>
+            <div class="mb5">
+                <label class="control-label">请输入积分</label>
+                <input class="vTextField" name="points"></input>
+            </div>
+            <div>
+            <label class="control-label">type</label>
+                <select name="record" class="form-control">
+                <option value='product_show'>产品秀积分</option>
+                <option value='review'>评论奖励积分</option>
+                <option value='feedback'>互动反馈积分</option>
+                <option value='promoting'>推广奖励积分</option>
+                <option value='register'>注册赠送积分</option>
+                <option value='order'>购物赠送积分</option>
+                <option value='affiliate'>佣金兑换积分</option>
+                <option value='compensation'>订单补偿积分</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+   
+    <div class="sel-li">
+    <h3>批量分配用户admin（负责人）</h3>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <div class="mb5">
+                <input type="hidden" name="type" value="admin" class="vTextField">
+                <label  class="notice">
+                    <div class="red">注意：一行一个Email！！！</div>
+                    <div>请输入email: </div>
+                </label>
+            </div>
+            <textarea name="email" class="form-control mb5"  rows="5"></textarea>
+            <div class="mb5">
+                <label class="control-label">admin（负责人）邮箱</label>
+                <input class="vTextField" name="admin" ></input>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+
+
+
+    
+    <div class="sel-li">
+    <h3>新开发批发客批量录入</h3>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <div class="mb5">
+                <input type="hidden" name="type" value="email" class="vTextField">
+                <label  class="notice">
+                    <div class="red">注意：一行一个Email！！！<div>    
+                    </div>请输入email: </div>
+                </label>
+            </div>
+            <textarea name="email" class="form-control mb5"  rows="5"></textarea>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    </div>
+</fieldset>
+<fieldset class="pro-sel">
+<div class="sel-box" style="padding-left:1%;">
+    <h3>用户导出相关</h3>
+    <hr>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <b>按照积分数范围/是否fb注册导出用户:</b><br>
+            <input type="hidden" name="type" value="export_point_customers">
+            <label class="control-label" for="fileInput">Point Form:</label>
+            <input type="text" name="point_from">
+            <label class="control-label" for="fileInput">Point To:</label>
+            <input type="text" name="point_to">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <label class="control-label" for="fileInput">Is_facebook</label>
+            <input type="radio" name="is_facebook" value="1">
+            <span>&nbsp</span>
+            <input class="btn btn-primary" type="submit" name="submit" value="Export">
+            <input class="btn btn-primary" type="submit" name="submit" value="Export_to">
+        </form>
+    </div>
+    <br>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <b>按照注册/下单/国家代码导出相应用户:</b><br>
+            <input type="hidden" name="type" value="export_by_country">
+            <label class="control-label" for="fileInput">Type:</label>
+            <select name="select_type">
+                <option value="register">Register</option>
+                <option value="order">Order</option>
+            </select>
+            <label class="control-label" for="fileInput">Country Code:</label>
+            <input type="text" name="country_code">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <!-- <input class="btn btn-primary" type="submit" name="submit" value="Export"> -->
+            <button type="submit" class="btn btn-primary">Export</button>
+        </form>
+    </div>
+    <br>
+<!--     <div class='mb5'>
+    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+        {% csrf_token %}
+        <b>加入wishlist没下单的用户导出(10天):</b><br>
+        <input type="hidden" name="type" value="export_wishlist_buy_none">
+        <label class="control-label" for="fileInput">Wishlist buy none:</label>
+        <span>&nbsp</span>
+        <button type="submit" class="btn btn-primary">Export</button>
+    </form>
+</div> -->
+    <hr>
+    <div class='mb5'>
+        <b>会员导出:</b><br>
+
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="get_vip_all">
+            <button type="submit" class="btn btn-primary">导出所有会员</button>
+        </form>
+
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="get_vip_all_valid">
+            <button type="submit" class="btn btn-primary">导出现在有效的vip用户</button>
+        </form>
+        <br>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            
+            <input type="hidden" name="type" value="get_vip_all_bytime">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <!-- <input class="btn btn-primary" type="submit" name="submit" value="Export"> -->
+            <button type="submit" class="btn btn-primary">按时间导出所有会员</button>
+        </form>
+    </div>
+    <br>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="get_vip_by_expiredtime">
+            <label class="control-label" for="fileInput">Type:</label>
+            <select name="vip_type">
+                <option value="6">还剩6个月到期时间的用户</option>
+                <option value="3">还剩3个月到期时间的用户</option>
+                <option value="1">还剩1个月到期时间的用户</option>
+            </select>
+            <span>&nbsp</span>
+            <button type="submit" class="btn btn-primary">按到期时间导出会员</button>
+        </form>
+    </div>
+    <hr>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'customer_points' %}">
+            {% csrf_token %}
+            <b>Admin销售统计表字段:</b><br>
+            <input type="hidden" name="type" value="get_admin_order">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from_time">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to_time">
+            <span>&nbsp</span>
+            <button type="submit" class="btn btn-primary">导出所有用户订单</button>
+        </form>
+    </div>
+    <br><br>
+</div>
+</fieldset>
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

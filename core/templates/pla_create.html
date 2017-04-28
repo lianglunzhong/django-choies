@@ -1,0 +1,148 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+{% if data == 0 %}
+ <form action="{% url 'pla_aciton' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="create">
+        <input type="hidden" name="create" value="0">
+    <table class="table table-hover table-striped">
+
+    <tr><td>country:</td>
+        <td><select name="country" >
+            <option value="US">US</option>
+            <option value="UK">UK</option>
+            <option value="AU">AU</option>
+            <option value="CA">CA</option>
+            <option value="FR">FR</option>
+            <option value="ES">ES</option>
+            <option value="DE">DE</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td>feed:</td>
+        <td><input type="text" name="feed"></td>
+    </tr>
+    <tr>
+        <td>id:</td>
+        <td><input type="text" name="uid"></td>
+    </tr>
+    <tr>
+        <td>title:</td>
+        <td>开头<input type="text" name="title1"> 结尾<input type="text" name="title2"></td>
+    </tr>
+    <tr>
+        <td>description:</td>
+        <td>开头<input type="text" name="description1"> 结尾<input type="text" name="description2"></td>
+    </tr>
+     <tr>
+        <td>custom_label_0:</td>
+        <td>分类
+           <!-- <select name="custom_label_0">
+                <option value="1">颜色</option>
+                <option value="2">分类</option>
+                <option value="3">价格范围</option>
+                <option value="4">爆款</option>
+                <option value="5">自定义</option>
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_1:</td>
+        <td>New arrival
+            <!--<select name="custom_label_1">
+                <option value="1">颜色</option>
+                <option value="2">分类</option>
+                <option value="3">价格范围</option>
+                <option value="4">爆款</option>
+                <option value="5">自定义</option>
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_2:</td>
+        <td> top seller
+            <!--<select name="custom_label_2">
+                <option value="1">颜色</option>
+                <option value="2">分类</option>
+                <option value="3">价格范围</option>
+                <option value="4">爆款</option>
+                <option value="5">自定义</option>
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_3:</td>
+        <td>自定义
+            <!--<select name="custom_label_3">
+                <option value="1">颜色</option>
+                <option value="2">分类</option>
+                <option value="3">价格范围</option>
+                <option value="4">爆款</option>
+                <option value="5">自定义</option>
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_4:</td>
+        <td>New best
+            <!--<select name="custom_label_4">
+                <option value="1">颜色</option>
+                <option value="2">分类</option>
+                <option value="3">价格范围</option>
+                <option value="4">爆款</option>
+                <option value="5">自定义</option>
+            </select>-->
+        </td>
+    </tr>
+    <tr>
+        <td>custom_label自定义内容:</td>
+        <td><input type="text" name="custom_label"></td>
+    </tr>
+    <tr>
+        <td>promotion:</td>
+        <td><input type="text" name="promotion"></td>
+    </tr>
+    <tr>
+        <td>lang:</td>
+        <td><input type="text" name="lang"></td>
+    </tr>
+    <tr>
+        <td><input type="submit" value="submit"></td>
+    </tr>
+
+    </table>
+ </form>
+{% endif %}
+{% if data == 1 %}
+<table class="table table-hover table-striped">
+    <form action="{% url 'pla_aciton' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="create">
+        <input type="hidden" name="create" value="1">
+        <tr>
+            <td>country:</td>
+            <td>
+                <select name="country">
+                    <option value="US">US</option>
+                    <option value="UK">UK</option>
+                    <option value="AU">AU</option>
+                    <option value="CA">CA</option>
+                    <option value="FR">FR</option>
+                    <option value="ES">ES</option>
+                    <option value="DE">DE</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>promotion</td>
+            <td><input type="text" name="promotion"></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="submit"></td>
+        </tr>
+    </form>
+</table>
+{% endif %}
+{% endblock %}

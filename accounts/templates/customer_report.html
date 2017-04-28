@@ -1,0 +1,168 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<!--最近两周周用户统计-->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a  data-toggle="collapse" data-parent="#accordion" href="#customer_week" style="text-decoration:none"><h4>用户状态统计</h4></a></li>
+    </ol>
+    <div id="customer_week" class="panel-collapse collapse in" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <input type="hidden" id='week_date' value="{{data}}" />
+        <div id="week_report" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
+        <br><br>
+    </div>
+</div>
+
+<!--下单用户统计-->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a  data-toggle="collapse" data-parent="#accordion" href="#customer_all" style="text-decoration:none"><h4>用户下单统计</h4></a></li>
+    </ol>
+    <div id="customer_all" class="panel-collapse collapse in" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="col-md-12" id="order_customer"  style="display: inline-block;"></div>
+                    <div class="col-md-12" style="text-align: center;">
+                        <form action="{% url 'customer_points' %}" method="post" target="blank">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="order_twice_export">
+                            <button type="submit" class="btn btn-default btn-sm" ><strong>- - - 下单两次及以上用户详情导出 - - -</strong></button>
+                        </form>
+                    </div>
+                </div>
+                <!-- <div class="col-md-6" id="order_twice"  style="display: inline-block;"></div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var data = $('#week_date').val();
+    data = $.parseJSON(data);
+    console.log(data.register)
+    $('#week_report').highcharts({
+        chart: {
+        type: 'spline'
+        },
+        title: {
+            text: '最近两周的用户统计'
+        },
+        subtitle: {
+            text: '当日注册、当日注册并下单、当日登录、注册用户总数的线形图'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { // don't display the dummy year
+                month: '%e. %b',
+                year: '%b'
+            },
+            title: {
+                text: 'Date'
+            }
+        },
+        yAxis: {
+            title: {
+                text: '注册人数'
+            },
+            min: 0
+        },
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+        },
+
+        plotOptions: {
+            spline: {
+              marker: {
+                  enabled: true
+              }
+          }
+        },
+
+        series: [{
+            name: '当日注册',
+            data: data.register,
+        },{
+            name: '当日登录',
+            data: data.login,
+            visible: false
+        }, {
+            name: '当日注册并下单',
+            data: data.register_order,
+            visible: false
+        }, {
+            name: '注册用户总数',
+            data: data.register_total,
+            visible: false
+        }]
+    });
+    //饼状图
+    $('#order_customer').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: '下单用户对比'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.y}</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {y}',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    },
+                    connectorColor: 'silver'
+                },
+                showInLegend: true
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: '数量',
+            data: data.order_customer
+        }]
+    }); 
+    //金字塔图
+/*    $(function () {
+        $('#order_customer').highcharts({
+            chart: {
+                type: 'pyramid',
+                marginRight: 100
+            },
+            title: {
+                text: 'Sales pyramid',
+                x: -50
+            },
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b> ({point.y:,.0f})',
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+                        softConnector: true
+                    }
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            series: [{
+                name: 'Unique users',
+                data: data.order_customer
+            }]
+        });
+    });*/
+})
+</script>
+{% endblock %}

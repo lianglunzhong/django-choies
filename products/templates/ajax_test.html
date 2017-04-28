@@ -1,0 +1,284 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<form method="post" id="formadd">
+    {% csrf_token %}
+    <input type="hidden" id="id_type" value="form001">
+    <label for="id_name">用户名</label>
+    <input type="text" id="id_name"/>
+    <label for = "id_password">密码</label>
+    <input type="password" id="id_password"/>
+    <button type="submit" id="submit" >提交</button>
+    <div id="result"></div>
+</form>
+
+<form id="form_date" method="post">
+    {% csrf_token %}
+    <input type="hidden" id="id_type2" value="onstock_vs_saled">
+    <strong>时间范围：</strong><font size="2">(默认为最近7天，建议选择时间间隔不要过长)</font><br>
+    <label class="control-label" for="fileInput">From:</label>
+    <input type="text" class="date" id="from_time">
+    <label class="control-label" for="fileInput">To:</label>
+    <input type="text" class="date" id="to_time">
+    <button type="submit" id="submit" class="btn btn-primary">sub</button><br>
+    <div id="order_report" style="display: inline-block; margin: 0 auto"></div>
+</form>
+
+<br><br><br>
+
+<form id="form_test" method="post">
+    {% csrf_token %}
+    <input type="hidden" id="hidden_test" value="hidden_test">
+    <strong>时间范围：</strong><font size="2">(默认为最近7天，建议选择时间间隔不要过长)</font><br>
+    <label class="control-label" for="fileInput">From:</label>
+    <input type="text" class="date" id="test_from_time">
+    <label class="control-label" for="fileInput">To:</label>
+    <input type="text" class="date" id="test_to_time">
+    <button type="submit" id="submit" class="btn btn-primary">sub</button><br>
+    
+</form>
+
+
+<br><br><br>
+<div id="test" style="height: 400px; min-width: 310px"></div>
+
+<script>
+    $(document).ready(function(){
+        $.ajaxSetup({
+             data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        $('#formadd').submit(function(){
+            var name = $("#id_name").val();                 //获得form中用户输入的name 注意这里的id_name 与你html中的id一致
+            var password = $("#id_password").val();    //同上
+            var type = $("#id_type").val();    //同上
+           
+            $.ajax({
+                type:"POST",
+                data: {type:type,name:name, password:password},
+                url: "{% url 'ajax_test' %}", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                dataType: "html",
+                // contentType: "application/json; charset=utf-8",
+                success: function(data, statues, xml){
+                    data = $.parseJSON(data);
+                    // alert(data.name);    
+                    $('#result').html(data.name);                                     //成功时弹出view传回来的结果
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+
+        $('#form_date').submit(function(){
+            var from_time = $("#from_time").val();
+            var to_time = $("#to_time").val();
+            var type = $("#id_type2").val();
+
+            $.ajax({
+                type: "POST",
+                data: {type:type,from_time:from_time,to_time:to_time},
+                url: "{% url 'ajax_test' %}",
+                cache: false,
+                dataType: "html",
+
+                success: function(data,statues,xml){
+                    data = $.parseJSON(data);
+                    $('#result').html(data.from_time);
+                    $('#order_report').highcharts({
+                        chart: {
+                        type: 'spline'
+                        },
+                        title: {
+                            text: '上新产品数及上新产品的销量对比统计'
+                        },
+                        subtitle: {
+                            text: ''
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            dateTimeLabelFormats: { // don't display the dummy year
+                                month: '%e. %b',
+                                year: '%b'
+                            },
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: '数量'
+                            },
+                            min: 0
+                        },
+                        tooltip: {
+                            headerFormat: '<b>{series.name}</b><br>',
+                            pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                        },
+
+                        plotOptions: {
+                            spline: {
+                              marker: {
+                                  enabled: true
+                              }
+                          }
+                        },
+
+                        series: [{
+                            name: '当日上新',
+                            data: data.onstock,
+                        }, {
+                            name: '当日上新产品销量',
+                            data: data.usual,
+                            visible: false
+                        }]
+                    });
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+
+        $('#form_test').submit(function(){
+            var from_time = $("#test_from_time").val();
+            var to_time = $("#test_to_time").val();
+            var type = $("#hidden_test").val();
+
+            $.ajax({
+                type: "POST",
+                data: {type:type,from_time:from_time,to_time:to_time},
+                url: "{% url 'ajax_test' %}",
+                cache: false,
+                dataType: "html",
+
+                success: function(data,statues,xml){
+                    data = $.parseJSON(data);
+                    console.log(data)
+                    var seriesOptions = [],
+                        seriesCounter = 0,
+                        names = ['MSFT', 'AAPL', 'GOOG'];
+
+                    /**
+                     * Create the chart when all data is loaded
+                     * @returns {undefined}
+                     */
+                    function createChart() {
+
+                        Highcharts.stockChart('test', {
+
+                            rangeSelector: {
+                                selected: 4
+                            },
+
+                            yAxis: {
+                                labels: {
+                                    formatter: function () {
+                                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                                    }
+                                },
+                                plotLines: [{
+                                    value: 0,
+                                    width: 2,
+                                    color: 'silver'
+                                }]
+                            },
+
+                            plotOptions: {
+                                series: {
+                                    compare: 'percent',
+                                    showInNavigator: true
+                                }
+                            },
+
+                            tooltip: {
+                                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                                valueDecimals: 2,
+                                split: true
+                            },
+
+                            series: seriesOptions
+                        });
+                    }
+                    $.each(names, function (i, name) {
+                        seriesOptions[i] = {
+                            name: name,
+                            data: data['data'+i]   
+                        };
+                        seriesCounter += 1;
+                        if (seriesCounter === names.length) {
+                            createChart();
+                        }
+                    });
+                    
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<ul class="nav nav-tabs" role="tablist" id="myTab">
+  <li role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab">Home</a></li>
+  <li role="presentation"><a href="#profile" role="tab" data-toggle="tab">Profile</a></li>
+  <li role="presentation"><a href="#messages" role="tab" data-toggle="tab">Messages</a></li>
+  <li role="presentation"><a href="#settings" role="tab" data-toggle="tab">Settings</a></li>
+</ul>
+
+<div class="tab-content">
+  <div role="tabpanel" class="tab-pane active" id="home">...</div>
+  <div role="tabpanel" class="tab-pane" id="profile">...</div>
+  <div role="tabpanel" class="tab-pane" id="messages">...</div>
+  <div role="tabpanel" class="tab-pane" id="settings">...</div>
+</div>
+
+<script>
+  $(function () {
+    $('#myTab a:first').tab('show')
+  })
+</script>
+
+
+
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

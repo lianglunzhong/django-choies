@@ -1,0 +1,31 @@
+<html>
+    <title>
+        category title
+    </title>
+    <body>
+        {{ category.title }}
+
+        <p>{{ total }}</p>
+
+        <table>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.sku }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.category_id }}</td>
+                <td>{{ product.created }}</td>
+                <td> <a href="{{ product.url }}">{{ product.title }} </a> </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Filter</h2>
+        <ul>
+            {% for category_filter in category_filters %}
+            <li>{{ category_filter.key }} {{ category_filter.doc_count }}</li>
+            {% endfor %}
+        </ul>
+
+    </body>
+</html>

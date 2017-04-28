@@ -1,0 +1,243 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+    <h3>批量添加订单产品</h3>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <div class="mb5">
+                <input type="hidden" name="type" value="add_item2order" class="vTextField">
+                <label class="notice">
+                        <div class="red">注意：</div><div>一行一个订单号</div></label>
+            </div>
+            <div class="mb5">
+            <textarea name="ordernums" class="form-control"  rows="5"></textarea>
+            <div class="mb5">
+            <label class="control-label">productitem SKU: </label>
+            <input type="text" name="sku" class="vTextField">
+            </div>
+            <!--<div class="mb5">
+            <label class="control-label">Attribute: </label>
+            <input type="text" name="attribute" class="vTextField">
+            </div>-->
+            
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+    </div>
+</fieldset>
+    
+<fieldset class="pro-sel">
+<fieldset>
+<div class="sel-box">
+    <h3>订单查询相关</h3>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}" target="blank">
+            {% csrf_token %}
+                    <div class="mb5">
+                         <input type="hidden" name="type" value="export_info_by_oids">
+                        <label><strong>查询order信息： </strong></label>
+                    </div>
+                    <div class="mb5">
+                            <label><div class="red">注意：请输入订单id 一行一个</div></label>
+                    </div>
+                    <div class="mb5">
+                            <textarea name="orderids" class="form-control"  rows="8"></textarea>
+                    </div>
+
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+    </div>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}" target="blank">
+            {% csrf_token %}
+                    <div class="mb5">
+                         <input type="hidden" name="type" value="export_ordernum_by_trackingcode">
+                        <label><strong>根据物流跟踪号查询order订单号: </strong></label>
+                    </div>
+                    <div class="mb5">
+                            <label><div class="red">注意：请输入物流号 一行一个</div></label>
+                    </div>
+                    <div class="mb5">
+                            <textarea name="trackingdodes" class="form-control"  rows="8"></textarea>
+                    </div>
+
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+    </div>
+        <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}" target="blank">
+            {% csrf_token %}
+                    <div class="mb5">
+                         <input type="hidden" name="type" value="export_tracking_code_by_ordernum">
+                        <label><strong>通过ordernum批量查询物流信息: </strong></label>
+                    </div>
+                    <div class="mb5">
+                            <label><div class="red">注意：一行一个订单号</div></label>
+                    </div>
+                    <div class="mb5">
+                            <textarea name="ordernums" class="form-control"  rows="8"></textarea>
+                    </div>
+
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+    </div>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}" target="blank">
+            {% csrf_token %}
+                    <div class="mb5">
+                         <input type="hidden" name="type" value="order_by_coupons">
+                        <label><strong>查询使用折扣号订单: </strong></label>
+                    </div>
+                    <div class="mb5">
+                        <input type="text" name="coupons">
+                    </div>
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+    </div>
+</div>
+</fieldset>
+<hr>
+<!--<fieldset>
+    <div class='mb5'>
+    <br>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>导出订单:</b><br>
+            <input type="hidden" name="type" value="export_order">
+            <label class="control-label" for="fileInput">Form:</label>
+            &lt;!&ndash; <input type="text" class="date" name="from"> &ndash;&gt;
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            &lt;!&ndash; <input type="text" class="date" name="to"> &ndash;&gt;
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出订单</button>
+        </form>
+        </div>
+</fieldset>-->
+<!--<fieldset>
+    <div class='mb5'>
+    <br>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>导出分类订单:</b><br>
+            <input type="hidden" name="type" value="export_order_category">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出分类订单</button>
+        </form>
+        </div>
+</fieldset>-->
+<fieldset>
+    <div class='mb5'>
+    <br>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>导出订单详情:</b><br>
+            <input type="hidden" name="type" value="export_order_detail">
+            <label class="control-label" for="fileInput">Type:</label>
+            <select name="date_type">
+                <option value="payment_date">Payment Date</option>
+                <option value="order_date">Order Date</option>
+            </select>
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出订单详情</button>
+        </form>
+        </div>
+</fieldset>
+<br>
+<fieldset>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>订单跟踪链接统计:</b><br>
+            <input type="hidden" name="type" value="export_status">
+            <label class="control-label" for="fileInput">Payment method:</label>
+            <select name="payment_method">
+                <option value="PP">PAYPAL</option>
+                <option value="GLOBEBILL">GLOBEBILL</option>
+            </select>
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+        </div>
+</fieldset>
+<br>
+<!--<fieldset>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>导出Wholesale用户订单:</b><br>
+            <input type="hidden" name="type" value="export_wholesale">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+        </div>
+</fieldset>-->
+<!--<br>
+<fieldset>
+    <div class='mb5'>
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_handle' %}">
+            {% csrf_token %}
+            <b>导出大客户订单-&#45;&#45;单笔金额$200+:</b><br>
+            <input type="hidden" name="type" value="export_amount200">
+            <label class="control-label" for="fileInput">Form:</label>
+            <input type="text" class="date" name="from">
+            <label class="control-label" for="fileInput">To:</label>
+            <input type="text" class="date" name="to">
+            <button type="submit" class="btn btn-primary">导出</button>
+        </form>
+        </div>
+</fieldset>
+<br>
+</fieldset>-->
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

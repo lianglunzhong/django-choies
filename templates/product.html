@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>{{ product.title}}</title>
+    </head>
+    <body>
+        <h1>{{ product.title }}</h1>
+
+
+        <table>
+            {% for variant in variants %}
+            <tr>
+                <td>{{ variant.qty }}</td>
+                <td>{{ variant.key }}</td>
+                <td>{{ variant.sku }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

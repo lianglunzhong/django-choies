@@ -1,0 +1,120 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+
+<fieldset class="pro-sel">
+    <div class="sel-box">
+        <h3>促销相关操作</h3>
+        <hr>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="{% url 'cart_promition' %}"><b>生成产品促销memcache(全部)</b></a>
+                    <hr>
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'cart_promition_data' %}">
+                        {% csrf_token %}
+                        <label  for="fileInput" ><strong>按sku生成促销memcache: </strong></label>
+
+                        <label class="notice">
+                            <div class="red">注意： (会覆盖原来的标签产品数据)</div>
+                            <div>一行一个SKU: </div>
+                        </label>
+
+                        <textarea name="skus" class="form-control md5"  rows="8" style="width: 80%;"></textarea>
+                        <input type="hidden" name="type" value="sku_memcache_add">
+                        <br>
+                        <button type="submit" class="btn btn-default btn-sm"><strong> Submit </strong></button>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'cart_promition_data' %}">
+                        {% csrf_token %}
+                        <label  for="fileInput"><strong>批量导入促销产品: </strong></label>
+                        <input id="file" type="file" name="file">
+                        <input type="hidden" name="type" value="do_promotion_insert">
+                        <label class="notice">
+                            <div class="red">(CSV模板: SKU,Price,Catalog,Expired Time,Type)</div>
+                            <div><a href = "/static/downloadfiles/批量导入促销产品.csv">csv文件模板下载</a></div>
+                            <div>特价产品促销: </div>
+                        </label>
+                        <button type="submit" class="btn btn-default btn-sm"><strong> Bulk Upload </strong></button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <form method="post" action="{% url 'cart_promition_data' %}">
+                        {% csrf_token %}
+                        <label><strong>新品促销分类产品关联: </strong></label>
+                        <input type="hidden" name="type" value="new_relate">
+                        <select name="new_relate_selete">
+                            <option value="one_week">一周</option>
+                            <option value="two_week">两周</option>
+                        </select>
+                        <button type="submit" class="btn btn-default btn-sm"><strong> Submit </strong></button>
+                    </form>
+                    <hr>
+                    <form method="post" action="{% url 'cart_promition_data' %}">
+                        {% csrf_token %}
+                        <label><strong>新品促销分类产品删除: </strong></label>
+                        <input type="hidden" name="type" value="new_delete">
+                        <button type="submit" class="btn btn-default btn-sm"><strong> Delete </strong></button>
+                    </form>
+                    <hr>
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'cart_promition_data' %}">
+                        {% csrf_token %}
+                        <label for="fileInput"><strong>折扣过期产品导出: </strong></label>
+                        <input type="hidden" name="type" value="export_special_expired">
+                        <button type="submit" class="btn btn-default btn-sm"><strong> Export </strong></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <!--<div class="container-fluid">-->
+             <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'cart_promition_data' %}">-->
+                 <!--{% csrf_token %}-->
+                 <!--<label>折扣号查询订单:</label>-->
+                 <!--<br>请输入折扣号-->
+                 <!--<input type="hidden" name="type" value="export_coupons_order">-->
+                 <!--<input type="text" name="coupons">-->
+                 <!--<button type="submit" class="btn btn-default btn-sm">导出</button>-->
+             <!--</form>-->
+        <!--</div>-->
+    </div>
+</fieldset>
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

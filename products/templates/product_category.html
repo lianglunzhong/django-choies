@@ -1,0 +1,211 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+    <h3>分类产品批量操作</h3>
+    <div class="sel-li">
+
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">
+            {% csrf_token %}
+                <div>
+                    <label class="control-label" >请选择标签进行操作：</label>
+                        <select name="tag">
+                        {% for obj in tag %}
+                            <option value="{{ obj.0 }}">{{obj.1}}</option>
+                        {% endfor %}
+                        </select>
+                </div>
+                <div>
+                    <label class="control-label" >请选择操作：</label>
+                    <select name="type" >
+                        <option value="related">批量分类产品关联 (会覆盖原来的标签产品数据)</option>
+                        <option value="category_add">批量分类产品添加</option>
+                        <option value="category_top">批量分类产品置顶显示</option>
+                        <option value="position_zerro">批量分类Position置零</option>
+                        <option value="postion">批量营销分类Position设置</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="control-label" >csv文件(一行一个sku)：</label>
+                    <input type="file" name="skus">
+                    <a href = "/static/downloadfiles/sku.csv">csv文件模板下载</a>
+                </div>
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+    </div>
+</div>
+</fieldset>
+
+<!--<fieldset class="pro-sel">-->
+<!--<div class="sel-box">-->
+    <!--<h3>分类产品批量操作</h3>-->
+    <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+                <!--<div>-->
+                    <!--<label class="control-label" >请选择标签进行操作：</label>-->
+                        <!--<select name="tag">-->
+                        <!--{% for obj in tag %}-->
+                            <!--<option value="{{ obj.0 }}">{{obj.1}}</option>-->
+                        <!--{% endfor %}-->
+                        <!--</select>-->
+                     <!---->
+                <!--</div>-->
+            <!---->
+            <!--<input type="hidden" name="type" value="related">-->
+            <!--<label ><strong>批量分类产品关联: </strong></label>-->
+
+            <!--<label class="notice"><div class="red">注意： (会覆盖原来的标签产品数据)</div><div>一行一个SKU: </div></label>-->
+
+            <!--<textarea name="skus" class="form-control" rows="5"></textarea>-->
+
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+    <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+                 <!--<div>-->
+                    <!--<label class="control-label" >请选择标签进行操作：</label>-->
+                        <!--<select name="tag" class="form-control">-->
+                        <!--{% for obj in tag %}-->
+                            <!--<option value="{{ obj.0 }}">{{obj.1}}</option>-->
+                        <!--{% endfor %}-->
+                        <!--</select>-->
+                <!--</div>-->
+            <!---->
+            <!--<input type="hidden" name="type" value="category_add">-->
+            <!--<label ><strong>批量分类产品添加: </strong></label>-->
+
+            <!--<label class="notice"><div class="red">注意：</div><div>一行一个SKU: </div></label>-->
+
+            <!--<textarea name="skus" class="form-control" rows="5"></textarea>-->
+
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+     <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+                <!--<div>-->
+                    <!--<label class="control-label" >请选择标签进行操作：</label>-->
+                        <!--<select name="tag" class="form-control">-->
+                        <!--{% for obj in tag %}-->
+                            <!--<option value="{{ obj.0 }}">{{obj.1}}</option>-->
+                        <!--{% endfor %}-->
+                        <!--</select>-->
+                    <!---->
+                <!--</div>-->
+            <!---->
+            <!--<input type="hidden" name="type" value="category_top">-->
+            <!--<label ><strong>批量分类产品置顶显示: </strong></label>-->
+
+            <!--<label class="notice">-->
+                <!--<div class="red">注意：</div>-->
+                <!--<div>一行一个SKU: </div>-->
+            <!--</label>-->
+
+            <!--<textarea name="skus" class="form-control" rows="5"></textarea>-->
+
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+     <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+               <!--<div>-->
+                    <!--<label class="control-label" >请选择标签进行操作：</label>-->
+                        <!--<select name="tag">-->
+                        <!--{% for obj in tag %}-->
+                            <!--<option value="{{ obj.0 }}">{{obj.1}}</option>-->
+                        <!--{% endfor %}-->
+                        <!--</select>-->
+                  <!--</div>-->
+            <!---->
+            <!--<input type="hidden" name="type" value="position_zerro">-->
+            <!--<label class="control-label"  ><strong>批量分类Position置零:</strong> </label>-->
+            <!--<br>-->
+            <!--<label class="notice"><div class="red">注意：</div><div>一行一个SKU: </div></label>-->
+
+            <!--<textarea name="skus" class="form-control" rows="5"></textarea>-->
+
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+     <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+               <!--<div>-->
+                    <!--<label class="control-label" >请选择标签进行操作：</label>-->
+                        <!--<select name="tag">-->
+                        <!--{% for obj in tag %}-->
+                            <!--<option value="{{ obj.0 }}">{{obj.1}}</option>-->
+                        <!--{% endfor %}-->
+                        <!--</select>-->
+                 <!--</div>-->
+            <!---->
+            <!--<input type="hidden" name="type" value="postion">-->
+            <!--<label class="control-label">批量营销分类Position设置: </label>-->
+
+            <!--<label class="notice"><div class="red">格式如右：</div><div>一行一个SKU: </div></label>-->
+
+            <!--<textarea name="skus" class="form-control" rows="5"></textarea>-->
+
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+<!--</div>-->
+<!--</fieldset>-->
+
+<!--<fieldset class="pro-sel">-->
+<!--<div class="sel-box">-->
+    <!--<h3>批量修改分类basic属性</h3>-->
+    <!--<div class="sel-li">-->
+        <!--<form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'category_product' %}">-->
+            <!--{% csrf_token %}-->
+            <!--<input type="hidden" name="type" value="cate_basic_save">-->
+            <!--<label class="notice"><div class="red">注意：一行一个分类链接！！！</div><div>请输入分类链接: </div></label>-->
+            <!--<textarea name="category_links" class="form-control" rows="5"></textarea>-->
+            <!--<button type="submit" class="btn btn-primary">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+<!--</div>-->
+<!--</fieldset>-->
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

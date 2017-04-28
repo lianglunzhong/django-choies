@@ -1,0 +1,142 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+{% if data.type == 0 %}
+ <form action="{% url 'pla_aciton' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="edit">
+        <input type="hidden" name="edit" value="0">
+        <input type="hidden" name="id" value="{{data.id}}">
+    <table class="table table-hover table-striped">
+
+    <tr><td>country:</td>
+        <td><select name="country" >
+        {% for country in select.country %}
+            <option value="{{ country }}" {% if data.country == country %} selected="selected" {% endif %}>{{ country }}</option>
+        {% endfor %}
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td>feed:</td>
+        <td><input type="text" name="feed" value="{{ data.feed }}"></td>
+    </tr>
+    <tr>
+        <td>id:</td>
+        <td><input type="text" name="uid" value="{{ data.uid }}"></td>
+    </tr>
+    <tr>
+        <td>title:</td>
+        <td>开头<input type="text" name="title1" value="{{ data.title1 }}"> 结尾<input type="text" name="title2" value="{{ data.title2 }}"></td>
+    </tr>
+    <tr>
+        <td>description:</td>
+        <td>开头<input type="text" name="description1" value="{{ data.description1 }}"> 结尾<input type="text" name="description2" value="{{ data.description2 }}"></td>
+    </tr>
+     <tr>
+        <td>custom_label_0:</td>
+        <td>分类
+            <!--<select name="custom_label_0">
+                {% for customer_label in select.custom_label %}
+                    {% for key,value in customer_label.items %}
+                    <option value="{{ key }}" {% if data.custom_label_0 = key %} selected="selected" {% endif %}>{{ value }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>-->
+        </td>
+     </tr>
+     <tr>
+        <td>custom_label_1:</td>
+        <td>New arrival
+            <!--<select name="custom_label_1">
+                {% for custom_label in select.custom_label %}
+                    {% for key,value in custom_label.items %}
+                    <option value="{{ key }}" {% if data.custom_label_1 == key %} selected="selected" {% endif %}>{{ value }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_2:</td>
+        <td>top seller
+            <!--<select name="custom_label_2">
+               {% for custom_label in select.custom_label %}
+                    {% for key,value in custom_label.items %}
+                    <option value="{{ key }}" {% if data.custom_label_2 = key %} selected="selected" {% endif %}>{{ value }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_3:</td>
+        <td>自定义
+            <!--<select name="custom_label_3">
+                  {% for custom_label in select.custom_label %}
+                    {% for key,value in custom_label.items %}
+                    <option value="{{ key }}" {% if data.custom_label_3 = key %} selected="selected" {% endif %}>{{ value }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>-->
+        </td>
+    </tr>
+     <tr>
+        <td>custom_label_4:</td>
+        <td>New best
+            <!--<select name="custom_label_4">
+                 {% for custom_label in select.custom_label %}
+                    {% for key,value in custom_label.items %}
+                    <option value="{{ key }}" {% if data.custom_label_4 = key %} selected="selected" {% endif %}>{{ value }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>-->
+        </td>
+    </tr>
+    <tr>
+        <td>custom_label自定义内容:</td>
+        <td><input type="text" name="custom_label" value="{{ data.custom_label }}"></td>
+    </tr>
+    <tr>
+        <td>promotion:</td>
+        <td><input type="text" name="promotion" value="{{ data.promotion }}"></td>
+    </tr>
+    <tr>
+        <td>lang:</td>
+        <td><input type="text" name="lang" value="{{ data.lang }}"></td>
+    </tr>
+    <tr>
+        <td><input type="submit" value="submit"></td>
+    </tr>
+
+    </table>
+ </form>
+{% endif %}
+{% if data.type == 1 %}
+<table class="table table-hover table-striped">
+    <form action="{% url 'pla_aciton' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="edit">
+        <input type="hidden" name="edit" value="1">
+        <input type="hidden" name="id" value="{{data.id}}">
+        <tr>
+            <td>country:</td>
+            <td>
+                <select name="country">
+                    {% for country in select.country %}
+                    <option value="{{ country }}" {% if data.country == country %} selected="selected"{% endif %}>{{ country }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>promotion</td>
+            <td><input type="text" name="promotion" value="{{ data.promotion }}"></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="submit"></td>
+        </tr>
+    </form>
+</table>
+{% endif %}
+{% endblock %}

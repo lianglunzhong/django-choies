@@ -1,0 +1,63 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+    <table class="table table-hover">
+        <tr>
+            {% for i in header %}
+            <td><strong>{{ i }}</strong></td>
+            {% endfor%}
+        </tr>
+        {% for orderpayment in orderpayments %}
+            <tr>
+                <td>{{ orderpayment.order_id }}</td>
+                <td>{{ orderpayment.trans_id }}</td>
+                <td>{{ orderpayment.currency }}</td>
+                <td>{{ orderpayment.amount }}</td>
+                <td>{{ orderpayment.created }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</div>
+</fieldset>
+
+
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

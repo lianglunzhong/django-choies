@@ -1,0 +1,23 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<fieldset class="pro-sel">
+<div class="sel-box">
+    <table class="table table-hover">
+        <tr>
+            <td><strong>sku</strong></td>
+            <td><strong>arrtibute</strong></td>
+        </tr>
+
+        {% for items in attributes %}
+         <tr>
+            <td>{{ items.sku }}</td>
+            <td>{{ items.size }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>
+</fieldset>
+{% endblock %}

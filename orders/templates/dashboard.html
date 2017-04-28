@@ -1,0 +1,382 @@
+{% extends "base_header.html" %}
+{% block content %}
+<body>
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a href="#" style="cursor:default;text-decoration:none"><h4>今日统计</h4></a></li>
+    </ol> 
+</div>
+<div class="row">
+    <div class="col-md-4" id="order_payment_status"  style="width:33%;display: inline-block;"></div>
+    <div class="col-md-4" id="product_status"  style="width:33%;display: inline-block;"></div>
+    <div class="col-md-4" id="order_shipment_status"  style="width:33%;display: inline-block;"></div>
+</div>
+<br><br><br>
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a href="#" style="cursor:default;text-decoration:none"><h4>本周统计</h4></a></li>
+    </ol> 
+</div>
+<div class="row">
+    <div class="col-md-4" id="order_report" style="width:33%;display: inline-block; margin: 0 auto"></div>
+    <div class="col-md-4" id="customer_report" style="width:33%;display: inline-block; margin: 0 auto"></div>
+    <div class="col-md-4" id="product_report" style="width:33%;display: inline-block; margin: 0 auto"></div>
+</div>
+    <input type="hidden" id='report_data' value="{{data}}" />
+    <script>
+        $(function () {
+            var data = $('#report_data').val();
+            data = $.parseJSON(data);
+            console.log(data)
+            // Build the chart
+            $('#order_payment_status').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '订单支付状态'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {y}',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            },
+                            connectorColor: 'silver'
+                        },
+                        showInLegend: true
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data:   data.order_payment_status
+                }]
+            });
+            $('#product_status').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: '产品更新状态'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {y}',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            },
+                            connectorColor: 'silver'
+                        },
+                        showInLegend: true
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data:   data.product_list
+                }]
+            });
+            $('#order_shipment_status').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'verify订单发货状态状态'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {y}',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            },
+                            connectorColor: 'silver'
+                        },
+                        showInLegend: true
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '占比',
+                    data:   data.shipping_status
+                }]
+            });
+            $('#order_report').highcharts({
+                chart: {
+                type: 'spline'
+                },
+                title: {
+                    text: '最近7天的订单统计'
+                },
+                subtitle: {
+                    text: '当日采购订单、红人订单、手机订单、电脑订单的线形图'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '订单数'
+                    },
+                    min: 0
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                },
+
+                plotOptions: {
+                    spline: {
+                      marker: {
+                          enabled: true
+                      }
+                  }
+                },
+
+                series: [{
+                    name: '采购订单',
+                    data: data.order,
+                }, {
+                    name: '红人订单',
+                    data: data.order_celebrity,
+                    visible: false
+                }, {
+                    name: '手机订单',
+                    data: data.porder,
+                    visible: false
+                }, {
+                    name: '电脑订单',
+                    data: data.usual,
+                    visible: false
+                }]
+            });
+            $('#customer_report').highcharts({
+                chart: {
+                type: 'spline'
+                },
+                title: {
+                    text: '最近7天的用户统计'
+                },
+                subtitle: {
+                    text: '当日注册、当日登录、注册用户总数的线形图'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '注册人数'
+                    },
+                    min: 0
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                },
+
+                plotOptions: {
+                    spline: {
+                      marker: {
+                          enabled: true
+                      }
+                  }
+                },
+
+                series: [{
+                    name: '当日注册',
+                    data: data.register,
+                }, {
+                    name: '当日登录',
+                    data: data.login,
+                    visible: false
+                }, {
+                    name: '注册用户总数',
+                    data: data.register_total,
+                    visible: false
+                }]
+            }); 
+            $('#product_report').highcharts({
+                chart: {
+                type: 'spline'
+                },
+                title: {
+                    text: '最近7天的产品统计'
+                },
+                subtitle: {
+                    text: '当日上新、下架、隐藏、销量、产品总数的线形图'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '数量'
+                    },
+                    min: 0
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                },
+
+                plotOptions: {
+                    spline: {
+                      marker: {
+                          enabled: true
+                      }
+                  }
+                },
+
+                series: [{
+                    name: '当日上新',
+                    data: data.onstock,
+                }, {
+                    name: '当日下架',
+                    data: data.outstock,
+                    visible: false
+                }, {
+                    name: '当日隐藏',
+                    data: data.hidden,
+                    visible: false
+                },{
+                    name: '当日销量',
+                    data: data.sale,
+                    visible: false
+                },{
+                    name: '在架并显示产品总数',
+                    data: data.on_vis,
+                    visible: false
+                }]
+            });
+        })  
+    </script>
+<br><br>
+<fieldset>
+    <div>
+       <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+       <li><a href="#" style="cursor:default;text-decoration:none"><h4>最新订单</h4></a></li>
+       </ol> 
+    </div>
+    <div style="margin-top:-10px;height:350px;overflow-x:hidden;overflow-y:scroll;">
+        <table class="table table-hover">
+        <tr>
+            <td><strong>订单号</strong></td>
+            <td><strong>emai</strong></td>
+            <td><strong>下单日期</strong></td>
+            <td><strong>确认时间</strong></td>
+            <td><strong>发货日期</strong></td>
+            <td><strong>支付状态</strong></td>
+            <td><strong>发货状态</strong></td>
+            <td><strong>币种</strong></td>
+            <td><strong>合计</strong></td>
+            <td><strong>付款方式</strong></td>
+            <td><strong>语言</strong></td>
+            <td><strong>修改</strong></td>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.ordernum }}</td>
+            <td>{{ order.email }}</td>
+            <td>{{ order.created }}</td>
+            <td>{{ order.verify_date }}</td>
+            <td>{{ order.shipping_date }}</td>
+            <td>{{ order.payment_status }}</td>
+            <td>{{ order.shipping_status }}</td>
+            <td>{{ order.currency }}</td>
+            <td>{{ order.amount }}</td> 
+            <td>{{ order.payment_method }}</td>
+            <td>{{ order.lang }}</td>
+            <td><a href="/admin/orders/order/{{ order.id }}/change/">修改</a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <br>
+    <br>
+    <div>
+       <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+       <li><a href="#" style="cursor:default;text-decoration:none"><h4>最新注册</h4></a></li>
+       </ol> 
+    </div>
+    <div style="margin-top:-10px;height:350px;overflow-x:hidden;overflow-y:scroll;">
+        <table class="table table-hover">
+        <tr>
+            <td><strong>注册时间</strong></td>
+            <td><strong>Firstname</strong></td>
+            <td><strong>Lastname</strong></td>
+            <td><strong>Email</strong></td>
+            <td><strong>生日</strong></td>
+            <td><strong>状态</strong></td>
+            <td><strong>性别</strong></td>
+            <td><strong>国家</strong></td>
+            <td><strong>最后一次登录时间</strong></td>
+            <td><strong>修改</strong></td>
+        </tr>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.created }}</td>
+            <td>{{ customer.firstname }}</td>
+            <td>{{ customer.lastname }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.brithday }}</td>
+            <td>{{ customer.status }}</td>
+            <td>{{ customer.gender }}</td>
+            <td>{{ customer.country }}</td>
+            <td>{{ customer.last_login_time }}</td>
+            <td><a href="/admin/accounts/customers/{{ customer.id }}/change/">修改</a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+</fieldset>
+</body>
+
+{% endblock %}

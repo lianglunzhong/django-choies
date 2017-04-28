@@ -1,0 +1,47 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<caption align="top">feed获取</caption>
+<a href="{% url 'create' '0' %}">新建</a>
+<table class="table table-hover table-striped" >
+    <tr>
+        <td style="width: 10%;" >国家</td>
+        <td style="width: 10%;" >feed名称</td>
+        <td style="width: 50%;" >feed url</td>
+        <td style="width: 30%;" >操作</td>
+    </tr>
+    {% for content in data %}
+    <tr>
+        <td style="width: 10%;" >{{ content.country }}</td>
+        <td>{{ content.feed }}</td>
+        <td>{{ content.urls }}</td>
+        <td style="width: 10%;" ><a href="{% url 'edit'  content.id %}" >编辑</a>
+            <a href="{% url 'get' content.country|lower content.id %}" >立即获取</a>
+            <a href="{% url 'delete'  content.id %}" >删除</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<hr>
+<caption align="top">自动获取feed的promotion_id字段操作</caption>
+<h6>自动获取类feed,一个国家只能新建一个</h6>
+<a href="{% url 'create' '1' %}">新建</a>
+<table class="table table-hover table-striped" >
+    <tr>
+        <td style="width: 20%;">国家</td>
+        <td style="width: 50%;">feed url</td>
+        <td style="width: 30%;">操作</td>
+    </tr>
+    {% for content in feed %}
+    <tr>
+        <td style="width: 10%;">{{ content.country }}</td>
+        <td style="width: 50%;">{{ content.urls }}</td>
+        <td style="width: 30%;"><a href="{% url 'edit'  content.id %}" >编辑</a>
+            <a href="{% url 'get' content.country|lower content.id %}" >立即获取</a>
+            <a href="{% url 'delete'  content.id %}" >删除</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<fieldset lass="pro-sel">
+<div class="sel-box">
+    <h3>产品批量操作</h3>
+    <div class="sel-li">
+    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'show_hidden_on_out' %}">
+            {% csrf_token %}
+            <label for="fileInput" ><strong>产品批量操作: </strong></label>
+            <select name="type" id="">
+                <option value="products_show">产品批量显示</option>
+                <option value="products_hidden">产品批量隐藏</option>
+                <!-- <option value="onstock">产品批量上架</option> -->
+                <!-- <option value="outstock">产品批量下架</option> -->
+            </select>
+
+            <label for="">csv文件:
+            <input type="file" name="skus" class="form-control">
+            <a href = "/static/downloadfiles/sku.csv">csv文件模板下载</a>
+            </label>
+            <button type="submit" class="btn btn-primary" >提交</button>
+        </form>
+    </div>
+</div>
+</fieldset>
+<!--<fieldset lass="pro-sel">
+<div class="sel-box">
+    <h3>产品批量操作</h3>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'show_hidden_on_out' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="products_show">
+            <label ><strong>产品批量显示: </strong></label>
+
+            <label class="notice">
+                        <div class="red">注意：一行一个SKU</div><div>请输入产品SKU: </div></label>
+
+            <textarea name="skus" class="form-control"  rows="5"></textarea>
+
+            <button type="submit" class="btn btn-primary" >提交</button>
+        </form>
+    </div>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'show_hidden_on_out' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="products_hidden">
+            <label  ><strong>产品批量隐藏: </strong></label>
+
+            <label class="notice"><div class="red">注意：一行一个SKU</div><div>请输入产品SKU: </div></label>
+
+            <textarea name="skus" class="form-control"  rows="5"></textarea>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'show_hidden_on_out' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="onstock">
+            <label ><strong>产品批量上架: </strong></label>
+
+            <label class="notice"><div class="red">注意：一行一个SKU</div><div>请输入产品SKU: </div></label>
+
+            <textarea name="skus" class="form-control"  rows="5"></textarea>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="sel-li">
+        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'show_hidden_on_out' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="outstock">
+            <label ><strong>产品批量下架: </strong></label>
+
+            <label class="notice"><div class="red">注意：一行一个SKU</div><div>请输入产品SKU: </div></label>
+
+            <textarea name="skus" class="form-control"  rows="5"></textarea>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+</fieldset>-->
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+{% endblock %}

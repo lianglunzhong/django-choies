@@ -1,0 +1,918 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+<script src="http://code.highcharts.com/mapdata/custom/world.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css" />
+
+<!--订单支付状态统计 -->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a data-toggle="collapse" data-parent="#accordion" href="#payment_status_select" style="text-decoration:none"><h4>订单支付状态统计</h4></a></li>
+    </ol>
+    <div id="payment_status_select" class="panel-collapse collapse in" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- <strong>时间：</strong><font size="2"></font> -->
+                    <label class="control-label" for="fileInput">FROM:</label>
+                    <input type="text" class="date" id="payment_status_from" value="{{ from_time }}">
+                    <label class="control-label" for="fileInput">TO:</label>
+                    <input type="text" class="date" id="payment_status_to" value="{{ to_time }}">
+                </div>
+                <div class="col-md-2">
+                    <strong>日期类型：</strong><font size="2"></font>
+                    <select id="payment_status_date">
+                        <option value="day">day</option>
+                        <!-- <option value="week">week</option> -->
+                        <!-- <option value="month">month</option> -->
+                        <!-- <option value="year">year</option> -->
+                    </select>                
+                </div>
+                <div class="col-md-2">
+                    <strong>订单类型：</strong><font size="2"></font>
+                    <select id="payment_status_ordertype">
+                        <option value="order">order</option>
+                        <option value="order_celebrity">order_celebrity</option>
+                        <option value="order_mobile">order_mobile</option>
+                        <option value="order_usual">order_usual</option>
+                    </select>                
+                </div>
+                <div class="col-md-2">
+                    <strong>支付状态：</strong><font size="2"></font>
+                    <select id="payment_status">
+                        <option value="verify_pass" >verify_pass</option>
+                        <option value="failed">failed</option>
+                        <option value="new">new</option>
+                        <option value="cancel">cancel</option>
+                        <option value="pending">pending</option>
+                        <option value="success">success</option>
+                        <option value="partial_paid">partial_paid</option>
+                        <option value="verify_banned">verify_banned</option>
+                        <option value="verify_failed">verify_failed</option>
+                        <option value="repeat_pay">repeat_pay</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <strong>统计结果：</strong><font size="2"></font>
+                    <select id="payment_status_result">
+                        <option value="numbers">numbers</option>
+                        <option value="amounts">amounts</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <div style="float:right;">
+                        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_report_export' %}" target="blank">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="payment_status_export">
+                            <button type="submit" class="btn btn-default btn-sm" ><strong>---导 出---</strong></button>
+                        </form>
+                    </div>
+                    <div style="float: right;">
+                        <button id="payment_status_button" type="button" class="btn btn-default btn-sm">
+                            <input type="hidden" name="type" id="payment_status_report" value="payment_status_report">
+                            <font><strong>---查 询---</strong></font>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <input type="hidden" id='report_data' value="{{data}}" />
+        <input type="hidden" id='order_result' value="{{order_result}}" />
+        <input type="hidden" id='order_type' value="{{order_type}}" />
+        <input type="hidden" id='payment_status' value="{{payment_status}}" />
+        <input type="hidden" id='order_date' value="{{order_date}}" />
+        <div id="payment_status_isdefault">
+            <div id="payment_status_container_isdefault" style="height: 500px;width:auto;"></div>
+        </div>
+        <div id="payment_status_loading" style="height: 500px;text-align: center; display: none;">
+            <br><h4>正在加载数据,请稍候...</h4><br>
+            <img src="/static/admin/img/loading001.gif" alt=""/>
+            </div>
+        <div id="payment_status_ajax" style="display: none;">
+            <div id="payment_status_container_ajax" style="height: 500px;width:auto;"></div>
+        </div>
+        <br>
+    </div>
+</div>
+<!--第一次打开页面是的默认图表展示-->
+<script >
+    $(function () { 
+        // $.getJSON('http://localhost/jsonp.php', function (data) {
+        var data = $('#report_data').val();
+        var order_result = $('#order_result').val();
+        var order_type = $('#order_type').val();
+        var payment_status = $('#payment_status').val();
+        var order_date = $('#order_date').val();
+        var title = order_date+'->'+order_type+'->'+payment_status+'->'+order_result;
+        data = $.parseJSON(data);
+        $('#payment_status_container_isdefault').highcharts('StockChart',{
+           chart: {
+                description: 'xxxxxxxxxxxxxxxxx'
+            },
+
+            title: {
+                text: title
+            },
+
+            subtitle: {
+                text: 'xxxxxxx'
+            },
+
+            rangeSelector: {
+                selected: 1
+            },
+            
+            series: [{
+                name: order_result,
+                data: data,
+                tooltip: {
+                    valueDecimals: 10
+                }
+            }]
+        })
+    }); 
+</script>
+<!--订单支付状态通过AJAX查询时的数据处理及图表展示-->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        /*
+         *订单支付状态ajax数据提交和处理
+         */
+        $('#payment_status_button').click(function(){
+            var type = $("#payment_status_report").val();
+            var from = $("#payment_status_from").val();
+            var to = $("#payment_status_to").val();
+            var date = $("#payment_status_date").val();
+            var order_type = $("#payment_status_ordertype").val();
+            var payment_status = $("#payment_status").val();
+            var result = $("#payment_status_result").val();
+            
+            $.ajax({
+                type: "POST",
+                data: {type:type,from:from,to:to,date:date,order_type:order_type,payment_status:payment_status,result:result},
+                url: "{% url 'order_report' %}",
+                cache: false,
+                dataType: "html",
+                beforeSend:function(){
+                    $("#payment_status_isdefault").hide();
+                    $("#payment_status_loading").show();
+                    $("#payment_status_ajax").hide();
+                },
+                complete:function(){
+                    $("#payment_status_loading").hide();
+                },
+                success:function(data,status,xml){
+                    $("#payment_status_ajax").show();
+                    var data = $.parseJSON(data);
+                    var title = date+'->'+order_type+'->'+payment_status+'->'+result;
+                    $('#payment_status_container_ajax').highcharts('StockChart',{
+                       chart: {
+                            description: 'xxxxxxxxxxxxxxxxx'
+                        },
+
+                        title: {
+                            text: title
+                        },
+
+                        subtitle: {
+                            text: 'xxxxxxx'
+                        },
+
+                        rangeSelector: {
+                            selected: 1
+                        },
+                        
+                        series: [{
+                            name: result,
+                            data: data.data,
+                            tooltip: {
+                                valueDecimals: 10
+                            }
+                        }]
+                    });
+                },
+                error:function(){
+                    alert("false");
+                },
+            });
+        });
+    });
+</script>
+
+<!--订单退款状态统计 -->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a data-toggle="collapse" data-parent="#accordion" href="#refund_status_select" style="text-decoration:none"><h4>订单退款状态统计</h4></a></li>
+    </ol>
+    <div id="refund_status_select" class="panel-collapse collapse out" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- <strong>时间范围：</strong><font size="2"></font><br> -->
+                    <label class="control-label" for="fileInput">FROM:</label>
+                    <input type="text" class="date" id="refund_status_from">
+                    <label class="control-label" for="fileInput">TO:</label>
+                    <input type="text" class="date" id="refund_status_to">
+                </div>
+                <div class="col-md-2">
+                    <strong>日期类型：</strong><font size="2"></font>
+                    <select id="refund_status_date">
+                        <option value="day">day</option>
+                        <!-- <option value="week">week</option> -->
+                        <!-- <option value="month">month</option> -->
+                        <!-- <option value="year">year</option> -->
+                    </select>                
+                </div>
+                <div class="col-md-2">
+                    <strong>退款状态：</strong><font size="2"></font>
+                    <select id="refund_status">
+                        <option value="refund" >refund</option>
+                        <option value="partial_refund">partial refund</option>
+                        <option value="sum">Sum</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <strong>统计结果：</strong><font size="2"></font>
+                    <select id="refund_status_result">
+                        <option value="numbers">numbers</option>
+                        <option value="amounts">amounts</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div style="float:right;">
+                        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_report_export' %}" target="blank">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="refund_status_export">
+                            <button type="submit" class="btn btn-default btn-sm" ><strong>---导 出---</strong></button>
+                        </form>
+                    </div>
+                    <div style="float: right;">
+                        <button id="refund_status_button" type="button" class="btn btn-default btn-sm">
+                            <input type="hidden" name="type" id="refund_status_report" value="refund_status_report">
+                            <font><strong>---查 询---</strong></font>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <div id="refund_status_loading" style="height: 500px;text-align: center; display: none;">
+            <br><h4>正在加载数据,请稍候...</h4><br>
+            <img src="/static/admin/img/loading001.gif" alt=""/>
+        </div>
+        <div id="refund_status_ajax" style="display: none;">
+            <div id="refund_status_container_ajax" style="height: 500px;width:auto;"></div>
+        </div>
+        <br>
+    </div>
+</div>
+<!--订单退款状态AJAX查询数据处理及图表展示-->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        /*
+         *退款状态ajax数据提交和处理
+         */
+        $('#refund_status_button').click(function(){
+            var type = $("#refund_status_report").val();
+            var from = $("#refund_status_from").val();
+            var to = $("#refund_status_to").val();
+            var date = $("#refund_status_date").val();
+            var refund_status = $("#refund_status").val();
+            var result = $("#refund_status_result").val();
+            
+            $.ajax({
+                type: "POST",
+                data: {type:type,from:from,to:to,date:date,refund_status:refund_status,result:result},
+                url: "{% url 'order_report' %}",
+                cache: false,
+                dataType: "html",
+                beforeSend:function(){
+                    $("#refund_status_loading").show();
+                    $("#refund_status_ajax").hide();
+                },
+                complete:function(){
+                    $("#refund_status_loading").hide();
+                },
+                success:function(data,status,xml){
+                    $("#refund_status_ajax").show();
+                    var data = $.parseJSON(data);
+                    var title = date+'->'+refund_status+'->'+result;
+                    $('#refund_status_container_ajax').highcharts('StockChart',{
+                       chart: {
+                            description: 'xxxxxxxxxxxxxxxxx'
+                        },
+
+                        title: {
+                            text: title
+                        },
+
+                        subtitle: {
+                            text: 'xxxxxxx'
+                        },
+
+                        rangeSelector: {
+                            selected: 1
+                        },
+                        
+                        series: [{
+                            name: result,
+                            data: data.data,
+                            tooltip: {
+                                valueDecimals: 10
+                            }
+                        }]
+                    });
+                },
+                error:function(){
+                    alert("false");
+                },
+            });
+        });
+    });
+</script>
+
+
+
+<!--订单发货国家统计 -->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a data-toggle="collapse" data-parent="#accordion" href="#shipping_country" style="text-decoration:none"><h4>订单发货国家统计</h4></a></li>
+    </ol>
+    <div id="shipping_country" class="panel-collapse collapse out" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div id="shipping_form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-5">
+                        <strong>查询时间范围：</strong><font size="2"></font>
+                        <label class="control-label" for="fileInput">From:</label>
+                        <input type="text" class="date" id="shipping_fromtime">
+                        <label class="control-label" for="fileInput">To:</label>
+                        <input type="text" class="date" id="shipping_totime">
+                    </div>
+                    <div class="col-md-1">
+                        <button id="shipping_button" type="button" class="btn btn-default btn-sm">
+                            <input type="hidden" id="shipping_hidden" value="shipping_country">
+                            <font><strong>---查 询---</strong></font>
+                        </button>
+                    </div>
+                </div>
+                <br><br>
+                <div id="shipping_report" style="display: none;">
+                    <ul class="nav nav-tabs" role="tablist" id="myTab">
+                      <!-- <li role="presentation" class="active"><a href="#shipping_report_map" role="tab" data-toggle="tab"><font size="3">发货国家地图信息展示</a></font></li> -->
+                      <li role="presentation"><a href="#shipping_report_histogram" role="tab" data-toggle="tab"><font size="3">发货国家前30柱状图</a></font></li>
+                      <li role="presentation"><a href="#shipping_report_table" role="tab" data-toggle="tab"><font size="3">EXCEL导出类型选择</a></font></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="shipping_report_map" style="height: 500px; min-width: 310px;padding-left: 0.6%;padding-right: 0.6%;">
+                            <div id="shipping_loading01" style="text-align: center;">
+                                <br><h4>正在加载数据,请稍候...</h4><br>
+                                <img src="/static/admin/img/loading001.gif" alt=""/>
+                            </div>
+                            <div id="shipping_table01">
+                                <div id="shipping_container01"></div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="shipping_report_histogram" style="height:500px;padding-left: 0.6%;padding-right: 0.6%;">
+                            <div id="shipping_loading02" style="text-align: center;">
+                                <br><h4>正在加载数据,请稍候...</h4><br>
+                                <img src="/static/admin/img/loading001.gif" alt=""/>
+                            </div>
+                            <div id="shipping_table02">
+                                <div id="shipping_cantainer02" style="min-width:95%;height:500px;max-width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="shipping_report_table" style="height:400px;padding-left: 0.6%;padding-right: 0.6%;">
+                            <div id="shipping_loading03" style="text-align: center;">
+                                <br><h4>正在加载数据,请稍候...</h4><br>
+                                <img src="/static/admin/img/loading001.gif" alt=""/>
+                            </div>
+                            <br>
+                            <div id="shipping_table03">
+                                <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_report_export' %}" target="blank">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="shipping_country_export">
+                                    <strong>请选择导出的数据类型：</strong>
+                                    <select name="shipping_export_type">
+                                        <option value="shipping_top30">前30发货国家订单数</option>
+                                        <option value="shipping_sum">每个国家发货订单总数</option>
+                                        <!-- <option value="shipping_day_sum">每个国家每天发货订单数</option> -->
+                                    </select>
+                                    <button type="submit" class="btn btn-default btn-sm" ><strong>---导 出---</strong></button>
+                                </form>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>   
+            </div>
+        </div>
+        <br><br>
+    </div>
+</div>
+<!--订单发货国家AJAX数据操作 -->
+<script>
+  $(function () {
+    $('#myTab a:first').tab('show')
+  })
+</script>
+<script>
+    $(document).ready(function(){
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+
+        $('#shipping_button').click(function(){
+            var from = $("#shipping_fromtime").val();
+            var to = $("#shipping_totime").val();
+            var type = $("#shipping_hidden").val();
+            $('#shipping_report').show();
+
+            $.ajax({
+                type: "POST",
+                data: {type:type,from:from,to:to},
+                url: "{% url 'order_report' %}",
+                cache: false,
+                dataType: "html",
+                beforeSend:function(){
+                    $("#shipping_loading01").show();
+                    $("#shipping_loading02").show();
+                    $("#shipping_loading03").show();
+                    $("#shipping_table01").hide();
+                    $("#shipping_table02").hide();
+                    $("#shipping_table03").hide();
+                },
+                complete:function(){
+                    $("#shipping_loading01").hide();
+                    $("#shipping_loading02").hide();
+                    $("#shipping_loading03").hide();
+                    $("#shipping_table01").show();
+                    $("#shipping_table02").show();
+                    $("#shipping_table03").show();
+                },
+                success: function(data,statues,xml){
+                    // alert("success");
+                    data = $.parseJSON(data);
+                    console.log(data.total_histogram)
+                    // data = $.parseJSON(data);
+                    //地图信息图
+                    $(function () {
+                        $.getJSON('http://www.hcharts.cn/datas/jsonp.php?filename=world-population-density.json&callback=?', function (data) {
+                        // console.log(data)
+                            // Add lower case codes to the data set for inclusion in the tooltip.pointFormat
+                            $.each(data, function () {
+                                this.flag = this.code.replace('UK', 'GB').toLowerCase();
+                            });
+                            // Initiate the chart
+                            $('#shipping_container01').highcharts('Map', {
+                                title: {
+                                    text: 'Fixed tooltip with HTML'
+                                },
+                                legend: {
+                                    title: {
+                                        text: 'Population density per km²',
+                                        style: {
+                                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                                        }
+                                    }
+                                },
+                                mapNavigation: {
+                                    enabled: true,
+                                    buttonOptions: {
+                                        verticalAlign: 'bottom'
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'none',
+                                    borderWidth: 0,
+                                    shadow: false,
+                                    useHTML: true,
+                                    padding: 0,
+                                    pointFormat: '<span class="f32"><span class="flag {point.flag}"></span></span>'
+                                    + ' {point.name}: <b>{point.value}</b>/km²',
+                                    positioner: function () {
+                                        return { x: 0, y: 250 };
+                                    }
+                                },
+                                colorAxis: {
+                                    min: 1,
+                                    max: 1000,
+                                    type: 'logarithmic'
+                                },
+                                series : [{
+                                    data : data,
+                                    mapData: Highcharts.maps['custom/world'],
+                                    joinBy: ['iso-a2', 'code'],
+                                    name: 'Population density',
+                                    states: {
+                                        hover: {
+                                            color: '#BADA55'
+                                        }
+                                    }
+                                }]
+                            });
+                        });
+                    });
+                    //柱状图
+                    $(function () {
+                        $('#shipping_cantainer02').highcharts({
+                            chart: {
+                                type: 'column'
+                            },
+                            title: {
+                                text: from+'---'+to+':发货数量前30国家'
+                            },
+                            subtitle: {
+                                text: 'Source: <a href="http://en.wikipedia.org/wiki/List_of_cities_proper_by_population">Wikipedia</a>'
+                            },
+                            xAxis: {
+                                type: 'category',
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '13px',
+                                        fontFamily: 'Verdana, sans-serif'
+                                    }
+                                }
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: '发货数量'
+                                }
+                            },
+                            legend: {
+                                enabled: false
+                            },
+                            tooltip: {
+                                pointFormat: '发货数量: <b>{point.y:.1f}</b>'
+                            },
+                            series: [{
+                                name: 'Population',
+                                data: data.total_histogram,
+                                dataLabels: {
+                                    enabled: true,
+                                    rotation: -90,
+                                    color: '#FFFFFF',
+                                    align: 'right',
+                                    format: '{point.y:.1f}', // one decimal
+                                    y: 10, // 10 pixels down from the top
+                                    style: {
+                                        fontSize: '13px',
+                                        fontFamily: 'Verdana, sans-serif'
+                                    }
+                                }
+                            }]
+                        });
+                    });
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+
+
+<!--使用积分折扣订单统计 -->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a data-toggle="collapse" data-parent="#accordion" href="#coupon_points_select" style="text-decoration:none"><h4>积分折扣订单统计</h4></a></li>
+    </ol>
+    <div id="coupon_points_select" class="panel-collapse collapse out" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-5">
+                    <strong>查询时间：</strong><font size="2"></font>
+                    <label class="control-label" for="fileInput">FROM:</label>
+                    <input type="text" class="date" id="coupon_points_from">
+                    <label class="control-label" for="fileInput">TO:</label>
+                    <input type="text" class="date" id="coupon_points_to">
+                </div>
+                <div class="col-md-3">
+                    <strong>查询类型：</strong><font size="2"></font>
+                    <select id="coupon_points_type">
+                        <option value="points">使用积分订单</option>
+                        <option value="coupon">使用折扣号订单</option>
+                        <option value="sum">总和</option>
+                    </select>                
+                </div>
+                <div class="col-md-1">
+                    <div style="float: right;">
+                        <button id="coupon_points_button" type="button" class="btn btn-default btn-sm">
+                            <input type="hidden" name="type" id="coupon_points_report" value="coupon_points_report">
+                            <font><strong>---查 询---</strong></font>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div style="float:right;">
+                        <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_report_export' %}" target="blank">
+                            {% csrf_token %}
+                            <input type="hidden" name="type" value="coupon_points_export">
+                            <button type="submit" class="btn btn-default btn-sm" ><strong>---导 出---</strong></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+        <div id="coupon_points_loading" style="height: 500px;text-align: center; display: none;">
+            <br><h4>正在加载数据,请稍候...</h4><br>
+            <img src="/static/admin/img/loading001.gif" alt=""/>
+        </div>
+        <div id="coupon_points_ajax" style="display: none;">
+            <div id="coupon_points_container" style="height: 500px;width:97%;"></div>
+        </div>
+        <br>
+    </div>
+</div>
+<!--使用积分折扣订单AJAX -->
+<script>
+    $(document).ready(function(){
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+
+        $('#coupon_points_button').click(function(){
+            var from = $("#coupon_points_from").val();
+            var to = $("#coupon_points_to").val();
+            var type = $("#coupon_points_report").val();
+            var type2 = $("#coupon_points_type").val();
+
+            $.ajax({
+                type: "POST",
+                data: {type:type,from:from,to:to,type2:type2},
+                url: "{% url 'order_report' %}",
+                cache: false,
+                dataType: "html",
+                beforeSend:function(){
+                    $("#coupon_points_loading").show();
+                    $("#coupon_points_ajax").hide();
+                },
+                complete:function(){
+                    $("#coupon_points_loading").hide();
+                    $("#coupon_points_ajax").show();
+                },
+                success: function(data,statues,xml){
+                    // alert('success');
+                    data = $.parseJSON(data);
+                    // console.log(data.date)
+                    //柱状图
+                    $(function () {
+                        $('#coupon_points_container').highcharts({
+                            chart: {
+                                type: 'column'
+                            },
+                            title: {
+                                text: from+'---'+to+':'+data.name
+                            },
+                            subtitle: {
+                                text: 'Source: <a href="http://en.wikipedia.org/wiki/List_of_cities_proper_by_population">Wikipedia</a>'
+                            },
+                            xAxis: {
+                                type: 'category',
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '13px',
+                                        fontFamily: 'Verdana, sans-serif'
+                                    }
+                                }
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: '订单数'
+                                }
+                            },
+                            legend: {
+                                enabled: false
+                            },
+                            tooltip: {
+                                pointFormat: '订单数: <b>{point.y:.1f}</b>'
+                            },
+                            series: [{
+                                name: 'Population',
+                                data: data.data,
+                                dataLabels: {
+                                    enabled: true,
+                                    rotation: -90,
+                                    color: '#FFFFFF',
+                                    align: 'right',
+                                    format: '{point.y:.1f}', // one decimal
+                                    y: 10, // 10 pixels down from the top
+                                    style: {
+                                        fontSize: '13px',
+                                        fontFamily: 'Verdana, sans-serif'
+                                    }
+                                }
+                            }]
+                        });
+                    });
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<!--新老客户下单统计 -->
+<div>
+    <ol class="breadcrumb" style="padding-top:0px;padding-bottom:0px;">
+    <li><a data-toggle="collapse" data-parent="#accordion" href="#new_old_order" style="text-decoration:none"><h4>新老客户下单统计</h4></a></li>
+    </ol>
+    <div id="new_old_order" class="panel-collapse collapse out" style="padding-left: 1.5%;padding-right: 2.5%;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-5">
+                    <strong>查询时间范围：</strong><font size="2"></font>
+                    <label class="control-label" for="fileInput">From:</label>
+                    <input type="text" class="date" id="newold_fromtime">
+                    <label class="control-label" for="fileInput">To:</label>
+                    <input type="text" class="date" id="newold_totime">
+                </div>
+                <div class="col-md-1">
+                    <button id="newold_button" type="button" class="btn btn-default btn-sm">
+                        <input type="hidden" id="newold_report" value="newold_report">
+                        <font><strong>---查 询---</strong></font>
+                    </button>
+                </div>
+                <div class="col-md-1">
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'order_report_export' %}" target="blank">
+                        {% csrf_token %}
+                        <input type="hidden" name="type" value="newold_export">
+                        <button type="submit" class="btn btn-default btn-sm" ><strong>---导 出---</strong></button>
+                    </form>
+                </div>
+            </div>
+            <br>
+            <div id="newold_loading" style="height: 500px;text-align: center; display: none;">
+                <br><h4>正在加载数据,请稍候...</h4><br>
+                <img src="/static/admin/img/loading001.gif" alt=""/>
+            </div>
+            <div id="newold_ajax" style="display: none;">
+                <div id="newold_container" style="height: 500px;width:97%;"></div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+<!--新老客户下单AJAX -->
+<script>
+    $(document).ready(function(){
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+
+        $('#newold_button').click(function(){
+            var from = $("#newold_fromtime").val();
+            var to = $("#newold_totime").val();
+            var type = $("#newold_report").val();
+
+            $.ajax({
+                type: "POST",
+                data: {type:type,from:from,to:to},
+                url: "{% url 'order_report' %}",
+                cache: false,
+                dataType: "html",
+                beforeSend:function(){
+                    $("#newold_loading").show();
+                    $("#newold_ajax").hide();
+                },
+                complete:function(){
+                    $("#newold_loading").hide();
+                    $("#newold_ajax").show();
+                },
+                success: function(data,statues,xml){
+                    // alert(type);
+                    data = $.parseJSON(data);
+                    // console.log(data.date)
+                    var title = from+'---'+to+'新老客户下单对比'
+                    //柱状图
+                    $(function () {
+                        $('#newold_container').highcharts({
+                            chart: {
+                                type: 'column'
+                            },
+                            title: {
+                                text: title
+                            },
+                            xAxis: {
+                                categories:data.date
+                            },
+                            yAxis: [{
+                                min: 0,
+                                title: {
+                                    text: '订单数'
+                                }
+                            }, {
+                                title: {
+                                    text: 'Profit (millions)'
+                                },
+                                opposite: true
+                            }],
+                            legend: {
+                                shadow: false
+                            },
+                            tooltip: {
+                                shared: true
+                            },
+                            plotOptions: {
+                                column: {
+                                    grouping: false,
+                                    shadow: false,
+                                    borderWidth: 0
+                                }
+                            },
+                            series: [{
+                                name: '订单总数',
+                                // color: 'rgba(#f7a35c,.9)',
+                                color: '#f7a35c',
+                                data: data.order_total,
+                                pointPadding: 0.3,
+                                pointPlacement: -0.2
+                            }, {
+                                name: '新客户订单',
+                                color: '#f15c81',
+                                data: data.order_new,
+                                pointPadding: 0.4,
+                                pointPlacement: -0.2
+                            },{
+                                name: '老客户订单',
+                                color: '#99ff99',
+                                data: data.order_old,
+                                pointPadding: 0.45,
+                                pointPlacement: -0.2
+                            }]
+                        });
+                    });
+                },
+                error: function(){
+                    alert("false");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+
+
+
+
+<!--页面日历js-->
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+
+{% endblock %}

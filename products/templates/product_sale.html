@@ -1,0 +1,189 @@
+{% extends "base_header.html" %}
+{% block content %}
+{% include "cxcalendar.html" %}
+
+<div class="sel-box">
+    <fieldset class="pro-sel">
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <h3>SKU销售情况</h3>
+                    <hr>
+                    <h4><em>1.按下单时间导出：</em></h4>
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}" target="blank">
+                        {% csrf_token %}
+                        <input type="hidden" name="type" value="export_skus_sale">
+                        <label class="control-label" >Form:</label>
+                        <input type="text" class="date" name="from_time">
+                        <label class="control-label" >To:</label>
+                        <input type="text" class="date" name="to_time">
+                        <br><br>
+                        <label>产品是否可见: </label>
+                        <select name='visibility'>
+                            <option value="1">可见</option>
+                            <option value="0">不可见</option>
+                            <option value="2">所有</option>
+                        </select>
+                        <br>
+                        <button type="submit" class="btn btn-primary">导出</button>
+                    </form>
+                    <br>
+                    <h4><em>2.按输入SKU导出：</em></h4>
+                    <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}" target="blank">
+                        {% csrf_token %}
+                        <input type="hidden" name="type" value="export_skus_sale_by_skus">
+                        <label style="color: red;">注意：一行一个SKU,请输入产品SKU</label>
+                        <br>
+                        <textarea name="skus" class="form-control"  rows="6" style="width: 40%;"></textarea>
+                        <br>
+                        <button type="submit" class="btn btn-primary">导出</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3>网站所有sku表现情况</h3>
+                <hr>
+                <!-- <h4><em>按产品可见性导出所有sku</em></h4> -->
+                <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}" target="blank">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="export_skus_all">
+                    <!-- <label class="control-label" >Form:</label>
+                    <input type="text" class="date" name="from_time"> -->
+                    <label class="control-label" >请选择当前日期:</label>
+                    <input type="text" class="date" name="to_time">
+                    <br>
+                    <label>产品是否可见: </label>
+                    <select name='visibility'>
+                        <option value="1">可见</option>
+                        <option value="0">不可见</option>
+                        <option value="2">所有</option>
+                    </select>
+                    <br>
+                    <button type="submit" class="btn btn-primary">导出</button>
+                </form>
+                <br>
+                <!-- <label class="red">注意：导出前请先同步网站可见产品的现售价后台数据，数据缓存15天</label>
+                <br>
+                <a href="{% url 'sale_price_memcache' %}" id='sale_price_memcache_a'><button type="submit" class="btn btn-primary">网站可见产品现售价同步</button></a>
+                <label id='sale_price_memcache_lable' style="color: red;display: none;">产品数据较多，请耐心等待.....</label> -->
+            </div>
+            <div class="col-md-6" style="margin-top: 50px;">
+                <h3>新品动销统计表</h3>
+                <hr>
+                <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="export_new_product_sale">
+                    <label class="control-label" >Form:</label>
+                    <input type="text" class="date" name="from_time">
+                    <label class="control-label" >To:</label>
+                    <input type="text" class="date" name="to_time">
+                    <br>
+                    <button type="submit" class="btn btn-primary">导出</button>
+                </form>
+            </div>
+        </div>
+        <br>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>各国家sku销售统计表</h3>
+                <!-- <p>导出当前日期的前两周 / 一周有销售的产品</p> -->
+                <hr>
+                <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="export_sku_country_sale">
+                    <label class="control-label" >Form:</label>
+                    <input type="text" class="date" name="from_time">
+                    <label class="control-label" >To:</label>
+                    <input type="text" class="date" name="to_time">
+                    <br>
+                    <label>国家: </label>
+                    <select name='isocode'>
+                        <option value="all">所有</option>
+                        {% for country in countrys %}
+                            <option value="{{ country.isocode }}">{{ country.isocode }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button type="submit" class="btn btn-primary">导出</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h3>各国品类销售统计表</h3>
+                <hr>
+                <form class="form-inline" role="form" enctype="multipart/form-data" method="post" action="{% url 'export_sku' %}" target="blank">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="export_set_country_sale">
+                    <label class="control-label" >Form:</label>
+                    <input type="text" class="date" name="from_time">
+                    <label class="control-label" >To:</label>
+                    <input type="text" class="date" name="to_time">
+                    <br><br>
+                    <label>品类: </label>
+                    <select name='set_id'>
+                        <option value="0">所有</option>
+                        {% for set in sets %}
+                            <option value="{{ set.id }}">{{ set.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label>国家: </label>
+                    <select name='isocode'>
+                        <option value="all">所有</option>
+                        {% for country in countrys %}
+                            <option value="{{ country.isocode }}">{{ country.isocode }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button type="submit" class="btn btn-primary">导出</button>
+                </form>
+            </div>
+        </div>
+        <br><br><br><br>
+    </fieldset>
+</div>
+
+
+<script type="text/javascript">
+    $('.date').cxCalendar();
+
+    function selectAll(selelct_all,checkbox_name) {
+        var obj = document.getElementById(selelct_all);
+        var cks = document.getElementsByTagName("input");
+        var ckslen = cks.length;
+        if (obj.checked){
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = true;
+                }
+            }
+        }else{
+            for(var i=0;i<ckslen;i++) {
+                if(cks[i].type == "checkbox" && cks[i].name==checkbox_name) {
+                    cks[i].checked = false;
+                }
+            }
+        }
+    }
+
+    function submitForm(method){
+        if(method == 'product_supplier_show'){
+            document.getElementById('record').value = 'search';
+            document.myFrom.submit();
+        }
+        if(method == 'product_supplier_export'){
+            document.getElementById('record').value = 'export';
+            document.myFrom.submit();
+        }
+    }
+</script>
+
+<script>
+    $(function(){
+        $('select').searchableSelect();
+    });
+
+    $('#sale_price_memcache_a').click(function() {
+        $('#sale_price_memcache_lable').show();
+    });
+</script>
+{% endblock %}
